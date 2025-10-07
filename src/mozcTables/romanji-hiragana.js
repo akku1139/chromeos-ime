@@ -1,6 +1,6 @@
 // based on https://github.com/google/mozc/blob/2efeece0ae519a17ffceaa766b5be1525f7cec7b/src/data/preedit/romanji-hiragana.tsv
 
-export default mozcRomanjiHiraganaTable = {
+export const mozcRomanjiHiraganaTable = {
   '-': ['ー'],
   '~': ['〜'],
   '.': ['。'],
