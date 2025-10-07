@@ -4,6 +4,7 @@ let contextID = -1;
 let inputContext = {
   converted: '',
   next: '',
+  keep: '',
 };
 
 const combKeys = {
@@ -98,16 +99,20 @@ chrome.input.ime.onKeyEvent.addListener(
       }
 
       else if(keyData.key.match(/^[a-z]$/)) {
-        const key = inputContext.next + keyData.key;
-        const conv = defaultRomajiTable[key];
+        inputContext.next += keyData.key;
+        const conv = defaultRomajiTable[inputContext.next];
         if(conv === void 0) {
-          inputContext.next += key;
+          if(inputContext.keep !== '') {
+            inputContext.converted += inputContext.keep;
+            inputContext.keep = '';
+          }
         } else {
-          if(defaultRomajiTableKeys.filter(v => v.startsWith(key)).length === 1) {
+          if(defaultRomajiTableKeys.filter(v => v.startsWith(inputContext.next)).length === 1) {
             inputContext.converted += conv[0];
             inputContext.next = conv[1] ?? '';
+            inputContext.keep = '';
           } else {
-            inputContext.next += key;
+            inputContext.keep = conv[0];
           }
         }
         setComposition();
