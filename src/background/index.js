@@ -32,6 +32,7 @@ chrome.input.ime.onKeyEvent.addListener(
         chrome.input.ime.setComposition({
           contextID,
           text: inputContext.converted + inputContext.next,
+          cursor: inputContext.converted.length + inputContext.next.length
         });
         return true;
       } else {
