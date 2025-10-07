@@ -1,4 +1,4 @@
-import { defaultRomajiTable } from '../romajiTable.js';
+import { defaultRomajiTable, defaultRomajiTableKeys } from '../romajiTable.js';
 
 let contextID = -1;
 let inputContext = {
@@ -14,12 +14,15 @@ const combKeys = {
 }
 const combKeysList = Object.keys(combKeys)
 
+
 const checkNotInputting = () => inputContext.converted === '' && inputContext.next === '';
+
 const setComposition = () => chrome.input.ime.setComposition({
   contextID,
   text: inputContext.converted + inputContext.next,
   cursor: inputContext.converted.length + inputContext.next.length
 });
+
 
 chrome.input.ime.onFocus.addListener((context) => {
   contextID = context.contextID;
@@ -44,6 +47,11 @@ chrome.input.ime.onKeyEvent.addListener(
       if(keyData.key === 'Enter') {
         if(checkNotInputting()) {
           return false;
+        }
+
+        if(inputContext !== '') {
+          const conv = defaultRomajiTable[inputContext.next];
+          inputContext.converted += conv[0] ?? inputContext.next;
         }
 
         chrome.input.ime.commitText({
@@ -85,6 +93,8 @@ chrome.input.ime.onKeyEvent.addListener(
       else if(keyData.key.match(/^[A-Z]$/)) {
         inputContext.converted += inputContext.next + keyData.key;
         inputContext.next = '';
+        setComposition();
+        return true;
       }
 
       else if(keyData.key.match(/^[a-z]$/)) {
@@ -93,8 +103,12 @@ chrome.input.ime.onKeyEvent.addListener(
         if(conv === void 0) {
           inputContext.next += key;
         } else {
-          inputContext.converted += conv[0];
-          inputContext.next = conv[1] ?? '';
+          if(defaultRomajiTableKeys.filter(v => v.startsWith(key)).length === 1) {
+            inputContext.converted += conv[0];
+            inputContext.next = conv[1] ?? '';
+          } else {
+            inputContext.next += key;
+          }
         }
         setComposition();
         return true;

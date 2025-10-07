@@ -6,3 +6,5 @@ import { mozcRomanjiHiraganaTable } from './mozcTables/romanji-hiragana.js';
 export const defaultRomajiTable = {
   ...mozcRomanjiHiraganaTable,
 };
+
+export const defaultRomajiTableKeys = Object.keys(defaultRomajiTable);
