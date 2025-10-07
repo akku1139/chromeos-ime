@@ -12,7 +12,12 @@ chrome.input.ime.onFocus.addListener((context) => {
 
 chrome.input.ime.onKeyEvent.addListener(
   (engineID, keyData) => {
-    if(keyData.type == 'keydown') {
+    chrome.input.ime.commitText({
+      contextID,
+      text: `debug: { engineID: ${engineID}, keyData: { type: ${keyData.type}, key: ${keyData.key} } }`,
+    });
+
+    if(keyData.type === 'keydown') {
       if(keyData.key === 'Enter') {
         chrome.input.ime.commitText({
           contextID,
