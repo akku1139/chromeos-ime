@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "chromeos ime",
+  "description": "wip",
+  "version": "0.0.0",
+  "icons": {
+  },
+  "background": {
+    "service_worker": "background/index.js"
+  },
+  "options_page": "options/index.html",
+  "permissions": [
+    "input",
+    "storage",
+    "unlimitedStorage"
+  ],
+  "input_components": [
+    {
+      "name": "Test IME (for US keyboard)",
+      "type": "ime",
+      "id": "test-ime-us",
+      "description": "Test IME",
+      "language": "ja",
+      "layouts": ["us"]
+    }
+  ]
+}
