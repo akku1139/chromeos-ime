@@ -6,7 +6,20 @@ let inputContext = {
   next: '',
 };
 
-const checkNotInputting = () => inputContext.converted === '' && inputContext.next === ''
+const combKeys = {
+  Control: false,
+  Shift: false,
+  // Meta: false,
+  Alt: false,
+}
+const combKeysList = Object.keys(combKeys)
+
+const checkNotInputting = () => inputContext.converted === '' && inputContext.next === '';
+const setComposition = () => chrome.input.ime.setComposition({
+  contextID,
+  text: inputContext.converted + inputContext.next,
+  cursor: inputContext.converted.length + inputContext.next.length
+});
 
 chrome.input.ime.onFocus.addListener((context) => {
   contextID = context.contextID;
@@ -19,7 +32,15 @@ chrome.input.ime.onKeyEvent.addListener(
       //   text: `debug: { engineID: ${engineID}, keyData: { type: ${keyData.type}, key: ${keyData.key} } }`,
       // });
 
+    if((keyData.type === 'keydown' || keyData.type === 'keyup') && combKeysList.includes(keyData.key)) {
+      combKeys[keyData.key] = keyData.type === 'keydown' ? true : false;
+    }
+
     if(keyData.type === 'keydown') {
+      if(combKeys.Control) {
+        return false;
+      }
+
       if(keyData.key === 'Enter') {
         if(checkNotInputting()) {
           return false;
@@ -41,11 +62,13 @@ chrome.input.ime.onKeyEvent.addListener(
 
         if(inputContext.next !== '') {
           inputContext.next = inputContext.next.slice(0, -1);
+          setComposition();
           return true;
         }
 
         if(inputContext.converted !== '') {
           inputContext.converted = inputContext.converted.slice(0, -1);
+          setComposition();
           return true
         }
       }
@@ -59,6 +82,11 @@ chrome.input.ime.onKeyEvent.addListener(
         return true;
       }
 
+      else if(keyData.key.match(/^[A-Z]$/)) {
+        inputContext.converted += inputContext.next + keyData.key;
+        inputContext.next = '';
+      }
+
       else if(keyData.key.match(/^[a-z]$/)) {
         const key = inputContext.next + keyData.key;
         const conv = defaultRomajiTable[key];
@@ -68,11 +96,7 @@ chrome.input.ime.onKeyEvent.addListener(
           inputContext.converted += conv[0];
           inputContext.next = conv[1] ?? '';
         }
-        chrome.input.ime.setComposition({
-          contextID,
-          text: inputContext.converted + inputContext.next,
-          cursor: inputContext.converted.length + inputContext.next.length
-        });
+        setComposition();
         return true;
       } else {
         return false;

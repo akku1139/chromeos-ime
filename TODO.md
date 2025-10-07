@@ -3,3 +3,5 @@
 # support delete, backspace
 
 ## support surrogate pair
+
+# support UperCase input
