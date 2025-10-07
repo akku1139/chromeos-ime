@@ -50,9 +50,9 @@ chrome.input.ime.onKeyEvent.addListener(
           return false;
         }
 
-        if(inputContext !== '') {
+        if(inputContext.next !== '') {
           const conv = defaultRomajiTable[inputContext.next];
-          if(conv) inputContext.converted += conv[0] ?? inputContext.next;
+          inputContext.converted += conv ? conv[0] : inputContext.next;
         }
 
         chrome.input.ime.commitText({
