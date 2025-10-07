@@ -1,4 +1,4 @@
-import { defaultRomajiTable } from '../romajiTable';
+import { defaultRomajiTable } from '../romajiTable.js';
 
 let contextID = -1;
 let inputContext = {
@@ -16,7 +16,6 @@ chrome.input.ime.onKeyEvent.addListener(
       contextID,
       text: `debug: { engineID: ${engineID}, keyData: { type: ${keyData.type}, key: ${keyData.key} } }`,
     });
-    return true;
 
     if(keyData.type === 'keydown') {
       if(keyData.key === 'Enter') {
@@ -42,10 +41,12 @@ chrome.input.ime.onKeyEvent.addListener(
         });
         return true;
       } else {
-        return false;
+        // return false;
+        return true;
       }
     } else {
-      return false;
+      // return false;
+      return true;
     }
   }
 );
