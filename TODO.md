@@ -7,3 +7,5 @@
 # support UperCase input
 
 # impl onReset, onBlur
+
+# Pick up the context in a content script
