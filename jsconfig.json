@@ -4,5 +4,6 @@
     "noEmit": true,
     "types": ["chrome-types"],
     "strict": true,
+    "checkJs": true,
   }
 }
