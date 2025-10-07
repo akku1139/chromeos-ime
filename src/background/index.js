@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 import { defaultRomajiTable, defaultRomajiTableKeys } from '../romajiTable.js';
 
 let contextID = -1;
