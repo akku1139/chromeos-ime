@@ -9,3 +9,5 @@
 # impl onReset, onBlur
 
 # Pick up the context in a content script
+
+# support unicode input with U+xxxx
