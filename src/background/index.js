@@ -32,6 +32,8 @@ const clearInputContext = () => {
   };
 };
 
+const getMatchingKeysCount = () => defaultRomajiTableKeys.filter(v => v.startsWith(inputContext.next)).length;
+
 
 chrome.input.ime.onFocus.addListener((context) => {
   contextID = context.contextID;
@@ -117,14 +119,17 @@ chrome.input.ime.onKeyEvent.addListener(
         inputContext.next += keyData.key;
         const conv = defaultRomajiTable[inputContext.next];
         if(conv === void 0) {
-          if(inputContext.keep !== '') {
-            if(defaultRomajiTableKeys.filter(v => v.startsWith(inputContext.next)).length === 0) {
+          if(getMatchingKeysCount() === 0) {
+            if(inputContext.keep !== '') {
               inputContext.converted += inputContext.keep;
               inputContext.keep = '';
+              inputContext.next = keyData.key;
             }
+            inputContext.converted += inputContext.next;
+            inputContext.next = '';
           }
         } else {
-          if(defaultRomajiTableKeys.filter(v => v.startsWith(inputContext.next)).length === 1) {
+          if(getMatchingKeysCount() === 1) {
             inputContext.converted += conv[0];
             inputContext.next = conv[1] ?? '';
             inputContext.keep = '';
