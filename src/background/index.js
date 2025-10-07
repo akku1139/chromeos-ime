@@ -12,10 +12,10 @@ chrome.input.ime.onFocus.addListener((context) => {
 
 chrome.input.ime.onKeyEvent.addListener(
   (engineID, keyData) => {
-    chrome.input.ime.commitText({
-      contextID,
-      text: `debug: { engineID: ${engineID}, keyData: { type: ${keyData.type}, key: ${keyData.key} } }`,
-    });
+      // chrome.input.ime.commitText({
+      //   contextID,
+      //   text: `debug: { engineID: ${engineID}, keyData: { type: ${keyData.type}, key: ${keyData.key} } }`,
+      // });
 
     if(keyData.type === 'keydown') {
       if(keyData.key === 'Enter') {
@@ -41,12 +41,10 @@ chrome.input.ime.onKeyEvent.addListener(
         });
         return true;
       } else {
-        // return false;
-        return true;
+        return false;
       }
     } else {
-      // return false;
-      return true;
+      return false;
     }
   }
 );
