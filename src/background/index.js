@@ -125,6 +125,8 @@ chrome.input.ime.onKeyEvent.addListener(
               inputContext.keep = '';
               inputContext.next = keyData.key;
             }
+          }
+          if(getMatchingKeysCount() === 0) { // different inputContext.next
             inputContext.converted += inputContext.next;
             inputContext.next = '';
           }
