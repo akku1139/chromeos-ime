@@ -52,7 +52,7 @@ chrome.input.ime.onKeyEvent.addListener(
 
         if(inputContext !== '') {
           const conv = defaultRomajiTable[inputContext.next];
-          inputContext.converted += conv[0] ?? inputContext.next;
+          if(!conv) inputContext.converted += conv[0] ?? inputContext.next;
         }
 
         chrome.input.ime.commitText({
