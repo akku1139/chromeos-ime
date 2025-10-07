@@ -103,8 +103,10 @@ chrome.input.ime.onKeyEvent.addListener(
         const conv = defaultRomajiTable[inputContext.next];
         if(conv === void 0) {
           if(inputContext.keep !== '') {
-            inputContext.converted += inputContext.keep;
-            inputContext.keep = '';
+            if(defaultRomajiTableKeys.filter(v => v.startsWith(inputContext.next)).length === 0) {
+              inputContext.converted += inputContext.keep;
+              inputContext.keep = '';
+            }
           }
         } else {
           if(defaultRomajiTableKeys.filter(v => v.startsWith(inputContext.next)).length === 1) {
