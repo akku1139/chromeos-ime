@@ -6,6 +6,8 @@ let inputContext = {
   next: '',
 };
 
+const checkNotInputting = () => inputContext.converted === '' && inputContext.next === ''
+
 chrome.input.ime.onFocus.addListener((context) => {
   contextID = context.contextID;
 });
@@ -19,20 +21,52 @@ chrome.input.ime.onKeyEvent.addListener(
 
     if(keyData.type === 'keydown') {
       if(keyData.key === 'Enter') {
+        if(checkNotInputting()) {
+          return false;
+        }
+
         chrome.input.ime.commitText({
           contextID,
           text: inputContext.converted,
         });
         inputContext.converted = '';
         inputContext.next = '';
-      } else if(keyData.key.match(/^[a-z]$/)) {
+      }
+
+      // FIXME: support surrogate pair
+      else if(keyData.key === 'Backspace') {
+        if(checkNotInputting()) {
+          return false;
+        }
+
+        if(inputContext.next !== '') {
+          inputContext.next = inputContext.next.slice(0, -1);
+          return true;
+        }
+
+        if(inputContext.converted !== '') {
+          inputContext.converted = inputContext.converted.slice(0, -1);
+          return true
+        }
+      }
+
+      // FIXME: impl
+      else if(keyData.key === 'Delete') {
+        if(checkNotInputting()) {
+          return false;
+        }
+
+        return true;
+      }
+
+      else if(keyData.key.match(/^[a-z]$/)) {
         const key = inputContext.next + keyData.key;
         const conv = defaultRomajiTable[key];
         if(conv === void 0) {
           inputContext.next += key;
         } else {
-          inputContext.converted += conv;
-          inputContext.next = '';
+          inputContext.converted += conv[0];
+          inputContext.next = conv[1] ?? '';
         }
         chrome.input.ime.setComposition({
           contextID,
