@@ -8,7 +8,7 @@ let inputContext = {
 };
 
 const combKeys = {
-  Control: false,
+  Ctrl: false,
   Shift: false,
   // Meta: false,
   Alt: false,
@@ -41,7 +41,7 @@ chrome.input.ime.onKeyEvent.addListener(
     }
 
     if(keyData.type === 'keydown') {
-      if(combKeys.Control) {
+      if(combKeys.Ctrl) {
         return false;
       }
 

@@ -5,3 +5,5 @@
 ## support surrogate pair
 
 # support UperCase input
+
+# impl onReset, onBlur
