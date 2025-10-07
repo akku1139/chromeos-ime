@@ -3,5 +3,6 @@
     "target": "esnext",
     "noEmit": true,
     "types": ["chrome-types"],
+    "strict": true,
   }
 }
