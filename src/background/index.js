@@ -24,9 +24,25 @@ const setComposition = () => chrome.input.ime.setComposition({
   cursor: inputContext.converted.length + inputContext.next.length
 });
 
+const clearInputContext = () => {
+  inputContext = {
+    converted: '',
+    next: '',
+    keep: '',
+  };
+};
+
 
 chrome.input.ime.onFocus.addListener((context) => {
   contextID = context.contextID;
+});
+
+chrome.input.ime.onBlur.addListener(targetContextID => {
+  clearInputContext();
+});
+
+chrome.input.ime.onReset.addListener(targetContextID => {
+  clearInputContext();
 });
 
 chrome.input.ime.onKeyEvent.addListener(
@@ -59,8 +75,7 @@ chrome.input.ime.onKeyEvent.addListener(
           contextID,
           text: inputContext.converted,
         });
-        inputContext.converted = '';
-        inputContext.next = '';
+        clearInputContext();
       }
 
       // FIXME: support surrogate pair
