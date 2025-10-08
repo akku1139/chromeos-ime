@@ -1,14 +1,27 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 import { defaultRomajiTable, defaultRomajiTableKeys } from '../romajiTable.js';
+import { findAllMatchedToken } from '../converter/index.js';
 
 
 const commitText = () => {
+  if(inputContext.next !== '') {
+    // NOTE: Mozc doesn't convert at this time. ex: 'n' -> 'ん'
+    // const conv = defaultRomajiTable[inputContext.next];
+    // addConverted(inputContext.next, conv ? conv[0] : inputContext.next)
+    addConverted(inputContext.next, inputContext.next)
+  }
+
+  const converted = inputContext.converted;
+  const raw = inputContext.raw;
+
   chrome.input.ime.commitText({
     contextID,
     text: inputContext.converted,
   });
   clearInputContext();
+
+  return [converted, raw];
 };
 
 /* Mode */
@@ -74,8 +87,27 @@ class ImeState {
    * @param { boolean } v
    */
   set conversion(v) {
-    if(this.#_conversion !== v) {
+    if(this.#_conversion === true && v === false) {
       commitText();
+    } else {
+      // FIXME: duplicate with commitText
+      if(inputContext.next !== '') {
+        addConverted(inputContext.next, inputContext.next)
+      }
+
+      const res = findAllMatchedToken(inputContext.converted, inputContext.raw);
+
+      // FIXME: everything
+      chrome.input.ime.setCandidates({
+        contextID,
+        candidates: res.map((r, i) => ({ candidate: r, id: i })),
+      });
+      chrome.input.ime.setCandidateWindowProperties({
+        engineID: 'test-ime-us',
+        properties: {
+          visible: true,
+        }
+      });
     }
     this.#_conversion = v;
   }
@@ -222,12 +254,6 @@ chrome.input.ime.onKeyEvent.addListener(
       else if(keyData.key === 'Enter') {
         if(checkNotInputting()) {
           return false;
-        }
-
-        if(inputContext.next !== '') {
-          // NOTE: Mozc doesn't convert at this time. ex: 'n' -> 'ん'
-          const conv = defaultRomajiTable[inputContext.next];
-          addConverted(inputContext.next, conv ? conv[0] : inputContext.next)
         }
 
         commitText();
