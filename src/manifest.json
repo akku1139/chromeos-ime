@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "chromeos ime",
   "description": "wip",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "icons": {
   },
   "background": {

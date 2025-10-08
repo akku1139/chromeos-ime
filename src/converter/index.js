@@ -1,4 +1,4 @@
-import { dictTree } from '../dict';
+import { dictTree } from '../dict/index.js';
 
 // FIXME: logic error
 
