@@ -21,3 +21,7 @@
 # input mode popup
 
 # cups lock support
+
+# merge dicts
+
+# record startup time

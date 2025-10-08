@@ -7,6 +7,17 @@ declare global {
   interface ObjectConstructor {
     keys<T>(o: T): Array<keyof T>;
   }
+
+  type MapValueType<M extends Map<any, any>> = M extends Map<any, infer V> ? V : never;
+
+  type Dict = Map<string, {
+    target: Array<string>,
+  }>
+
+  type DictTreeNode = Map<string, {
+    children: DictTreeNode,
+    end: boolean,
+  }>;
 }
 
 export {};
