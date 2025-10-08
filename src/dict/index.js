@@ -20,10 +20,10 @@ for(const key of dict.keys()) {
       newData = {
         children: new Map(),
         end: false,
-      }
+      };
+      targetNode.set(e, newData);
     }
     newData.end = newData.end || i === a.length-1;
-    targetNode.set(e, newData);
     targetNode = newData.children;
   })
 }
