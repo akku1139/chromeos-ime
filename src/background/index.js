@@ -17,7 +17,7 @@ const MODE = /** @type {const} */ ({
 
 // TODO: merge init logic
 chrome.input.ime.setMenuItems({
-  engineID: 'test-ime',
+  engineID: 'test-ime-us',
   items: [{
     id: MODE.DIRECT,
     label: 'Direct input',
@@ -48,7 +48,7 @@ class ImeState {
   set mode(v) {
     this.#_mode = v;
     chrome.input.ime.updateMenuItems({
-      engineID: 'test-ime',
+      engineID: 'test-ime-us',
       items: [{
         id: v,
         checked: true,
@@ -63,7 +63,10 @@ class ImeState {
 
 const imeState = new ImeState;
 
-// onMenuItemActivated
+// FIXME:
+chrome.input.ime.onMenuItemActivated.addListener((_engineID, name) => {
+  imeState.mode = name;
+})
 
 
 /* Context */
@@ -160,6 +163,7 @@ chrome.input.ime.onKeyEvent.addListener(
         return false;
       }
 
+      // FIXME: in US keymap, ime cannot capture Henkan/Muhenkan keyevents.
       else if(keyData.key === 'Convert') {
         imeState.mode = MODE.PRE_CONVERSION;
         // TODO: popup
