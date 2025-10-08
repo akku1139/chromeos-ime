@@ -3,6 +3,14 @@
 import { defaultRomajiTable, defaultRomajiTableKeys } from '../romajiTable.js';
 
 
+const commitText = () => {
+  chrome.input.ime.commitText({
+    contextID,
+    text: inputContext.converted,
+  });
+  clearInputContext();
+};
+
 /* Mode */
 
 /**
@@ -12,7 +20,6 @@ const MODE = /** @type {const} */ ({
   DIRECT: 'Direct Input',
   PRE_CONVERSION: 'Hiragana',
   // KANA: 'Kana input',
-  // CONVERSION: 'kana-kanji conversion',
 });
 
 /**
@@ -24,8 +31,15 @@ class ImeState {
    */
   #_mode;
 
+  /**
+   * @type { boolean }
+   */
+  #_conversion;
+
+
   constructor() {
     this.#_mode = MODE.DIRECT;
+    this.#_conversion = false;
   }
 
   /**
@@ -33,6 +47,8 @@ class ImeState {
    */
   set mode(v) {
     this.#_mode = v;
+    commitText();
+    this.conversion = false;
     chrome.input.ime.updateMenuItems({
       engineID: 'test-ime-us',
       items: this.menuItems,
@@ -53,12 +69,25 @@ class ImeState {
       checked: this.#_mode === mode,
     }));
   }
+
+  /**
+   * @param { boolean } v
+   */
+  set conversion(v) {
+    if(this.#_conversion !== v) {
+      commitText();
+    }
+    this.#_conversion = v;
+  }
+  get conversion() {
+    return this.#_conversion;
+  }
 }
 
 const imeState = new ImeState;
 
 chrome.input.ime.onActivate.addListener((_engineID, _screen) => {
-  chrome.input.ime.updateMenuItems({
+  chrome.input.ime.setMenuItems({
     engineID: 'test-ime-us',
     items: imeState.menuItems,
   });
@@ -94,6 +123,9 @@ let inputContext = {
     kana: '',
   },
 };
+
+// TODO: use
+let conversionContext = {};
 
 const combKeys = {
   Ctrl: false,
@@ -167,7 +199,6 @@ chrome.input.ime.onKeyEvent.addListener(
       // FIXME: in US keymap, ime cannot capture Henkan/Muhenkan keyevents.
       else if(keyData.key === 'Convert') {
         imeState.mode = MODE.PRE_CONVERSION;
-        // TODO: popup
         return true;
       }
 
@@ -178,6 +209,14 @@ chrome.input.ime.onKeyEvent.addListener(
 
       else if(imeState.mode === MODE.DIRECT) {
         return false;
+      }
+
+      else if(imeState.conversion) {
+        if(keyData.key === 'Enter') {
+          imeState.conversion = false;
+        }
+
+        return true;
       }
 
       else if(keyData.key === 'Enter') {
@@ -191,11 +230,7 @@ chrome.input.ime.onKeyEvent.addListener(
           addConverted(inputContext.next, conv ? conv[0] : inputContext.next)
         }
 
-        chrome.input.ime.commitText({
-          contextID,
-          text: inputContext.converted,
-        });
-        clearInputContext();
+        commitText();
       }
 
       // FIXME: support surrogate pair
@@ -224,6 +259,11 @@ chrome.input.ime.onKeyEvent.addListener(
           return false;
         }
 
+        return true;
+      }
+
+      else if(keyData.key === ' ') {
+        imeState.conversion = true;
         return true;
       }
 
