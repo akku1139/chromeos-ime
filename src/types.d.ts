@@ -5,7 +5,7 @@ declare global {
   }
 
   interface ObjectConstructor {
-    keys<T>(o: T): Array<keyof T>
+    keys<T>(o: T): Array<keyof T>;
   }
 }
 

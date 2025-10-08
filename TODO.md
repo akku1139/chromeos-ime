@@ -15,3 +15,11 @@
 # support SKK dict
 
 # add type check ci
+
+# raw input mode
+
+# support multiple context?
+
+# input mode popup
+
+# cups lock support

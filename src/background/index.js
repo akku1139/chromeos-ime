@@ -2,11 +2,91 @@
 
 import { defaultRomajiTable, defaultRomajiTableKeys } from '../romajiTable.js';
 
+
+/* Mode */
+
+/**
+ * @readonly
+ */
+const MODE = /** @type {const} */ ({
+  DIRECT: 'Direct Input',
+  PRE_CONVERSION: 'Romaji input',
+  // KANA: 'Kana input',
+  // CONVERSION: 'kana-kanji conversion',
+});
+
+// TODO: merge init logic
+chrome.input.ime.setMenuItems({
+  engineID: 'test-ime',
+  items: [{
+    id: MODE.DIRECT,
+    label: 'Direct input',
+    checked: true,
+    enabled: true,
+  },{
+    id: MODE.PRE_CONVERSION,
+    label: 'Hiragana'
+  }],
+});
+
+/**
+ * @typedef { typeof MODE[keyof typeof MODE] } ModeVal
+ */
+class ImeState {
+  /**
+   * @type { typeof MODE[keyof typeof MODE] } mode
+   */
+  #mode;
+
+  constructor() {
+    this.#mode = MODE.DIRECT;
+  }
+
+  /**
+   * @param { ModeVal } v
+   */
+  set mode(v) {
+    this.#mode = v;
+    chrome.input.ime.updateMenuItems({
+      engineID: 'test-ime',
+      items: [{
+        id: v,
+        checked: true,
+        enabled: true,
+      }],
+    });
+  }
+  get mode() {
+    return this.mode;
+  }
+}
+
+// onMenuItemActivated
+
+
+/* Context */
+
 let contextID = -1;
+
+/**
+ * @type { {
+ *  converted: string;
+ *   next: string;
+ *   raw: Array<string>;
+ *   keep: {
+ *       raw: string;
+ *       kana: string;
+ *   };
+ * } }
+ */
 let inputContext = {
   converted: '',
   next: '',
-  keep: '',
+  raw: [],
+  keep: {
+    raw: '',
+    kana: '',
+  },
 };
 
 const combKeys = {
@@ -29,12 +109,30 @@ const setComposition = () => chrome.input.ime.setComposition({
 const clearInputContext = () => {
   inputContext = {
     converted: '',
+    raw: [],
     next: '',
-    keep: '',
+    keep: {
+      raw: '',
+      kana: '',
+    },
   };
 };
 
 const getMatchingKeysCount = () => defaultRomajiTableKeys.filter(v => v.startsWith(inputContext.next)).length;
+
+/**
+ *
+ * @param { string | Array<string> } raw
+ * @param { string } converted
+ */
+const addConverted = (raw, converted) => {
+  inputContext.converted += converted;
+  if(Array.isArray(raw)) {
+    inputContext.raw.push(...raw);
+  } else {
+    inputContext.raw.push(raw);
+  }
+}
 
 
 chrome.input.ime.onFocus.addListener((context) => {
@@ -50,12 +148,7 @@ chrome.input.ime.onReset.addListener(targetContextID => {
 });
 
 chrome.input.ime.onKeyEvent.addListener(
-  (engineID, keyData) => {
-      // chrome.input.ime.commitText({
-      //   contextID,
-      //   text: `debug: { engineID: ${engineID}, keyData: { type: ${keyData.type}, key: ${keyData.key} } }`,
-      // });
-
+  (_engineID, keyData) => {
     if((keyData.type === 'keydown' || keyData.type === 'keyup') && combKeysList.includes(keyData.key)) {
       combKeys[keyData.key] = keyData.type === 'keydown' ? true : false;
     }
@@ -65,14 +158,30 @@ chrome.input.ime.onKeyEvent.addListener(
         return false;
       }
 
-      if(keyData.key === 'Enter') {
+      else if(keyData.key === 'Convert') {
+        currentMode = MODE.PRE_CONVERSION;
+        // TODO: popup
+        return true;
+      }
+
+      else if(keyData.key === 'NonConvert') {
+        currentMode  = MODE.DIRECT;
+        return true;
+      }
+
+      else if(currentMode === MODE.DIRECT) {
+        return false;
+      }
+
+      else if(keyData.key === 'Enter') {
         if(checkNotInputting()) {
           return false;
         }
 
         if(inputContext.next !== '') {
+          // NOTE: Mozc doesn't convert at this time. ex: 'n' -> 'ん'
           const conv = defaultRomajiTable[inputContext.next];
-          inputContext.converted += conv ? conv[0] : inputContext.next;
+          addConverted(inputContext.next, conv ? conv[0] : inputContext.next)
         }
 
         chrome.input.ime.commitText({
@@ -96,6 +205,7 @@ chrome.input.ime.onKeyEvent.addListener(
 
         if(inputContext.converted !== '') {
           inputContext.converted = inputContext.converted.slice(0, -1);
+          inputContext.raw.pop();
           setComposition();
           return true
         }
@@ -111,7 +221,8 @@ chrome.input.ime.onKeyEvent.addListener(
       }
 
       else if(keyData.key.match(/^[A-Z]$/)) {
-        inputContext.converted += inputContext.next + keyData.key;
+        const input = inputContext.next + keyData.key;
+        addConverted(Array.from(input), input);
         inputContext.next = '';
         setComposition();
         return true;
@@ -122,23 +233,32 @@ chrome.input.ime.onKeyEvent.addListener(
         const conv = defaultRomajiTable[inputContext.next];
         if(conv === void 0) {
           if(getMatchingKeysCount() === 0) {
-            if(inputContext.keep !== '') {
-              inputContext.converted += inputContext.keep;
-              inputContext.keep = '';
+            if(inputContext.keep.kana !== '') {
+              addConverted(inputContext.keep.raw, inputContext.keep.kana)
+              inputContext.keep = {
+                raw: '',
+                kana: '',
+              };
               inputContext.next = keyData.key;
             }
           }
           if(getMatchingKeysCount() === 0) { // different inputContext.next
-            inputContext.converted += inputContext.next;
+            addConverted(Array.from(inputContext.next), inputContext.next);
             inputContext.next = '';
           }
         } else {
           if(getMatchingKeysCount() === 1) {
-            inputContext.converted += conv[0];
+            addConverted(inputContext.next, conv[0]);
             inputContext.next = conv[1] ?? '';
-            inputContext.keep = '';
+            inputContext.keep = {
+              raw: '',
+              kana: '',
+            };
           } else {
-            inputContext.keep = conv[0];
+            inputContext.keep = {
+              raw: inputContext.next,
+              kana: conv[0],
+            };
           }
         }
         setComposition();
