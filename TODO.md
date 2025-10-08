@@ -8,6 +8,8 @@
 
 # impl onReset, onBlur
 
-# Pick up the context in a content script
+# Pick up the context in a content script or `chrome.input.ime.getSurroundingText` ?
 
 # support unicode input with U+xxxx
+
+# support SKK dict
