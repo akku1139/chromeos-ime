@@ -33,24 +33,26 @@ export const findAllMatchedToken = (kana, raw) => {
       res.push(target);
     }
 
+    if(raw[i+1] !== undefined) {
+      const rs = Array.from(raw[i+1]);
+      let rawTarget = target;
+      let rawNode = data;
 
-    const rs = Array.from(raw[i+1]);
-    let rawTarget = target;
-    let rawNode = currentNode;
+      for(const r of rs) {
+        const rawData = rawNode.children.get(r);
 
-    for(const r of rs) {
-      rawTarget += r;
-      const data = rawNode.get(r);
+        if(!rawData) {
+          break;
+        }
 
-      if(!data) {
-        break;
+        rawTarget += r;
+
+        if(rawData.end) {
+          res.push(rawTarget);
+        }
+
+        rawNode = rawData;
       }
-
-      if(data.end) {
-        res.push(rawTarget);
-      }
-
-      rawNode = data.children;
     }
 
 
