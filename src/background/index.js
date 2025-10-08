@@ -34,19 +34,19 @@ chrome.input.ime.setMenuItems({
  */
 class ImeState {
   /**
-   * @type { typeof MODE[keyof typeof MODE] } mode
+   * @type { typeof MODE[keyof typeof MODE] }
    */
-  #mode;
+  #_mode;
 
   constructor() {
-    this.#mode = MODE.DIRECT;
+    this.#_mode = MODE.DIRECT;
   }
 
   /**
    * @param { ModeVal } v
    */
   set mode(v) {
-    this.#mode = v;
+    this.#_mode = v;
     chrome.input.ime.updateMenuItems({
       engineID: 'test-ime',
       items: [{
@@ -57,7 +57,7 @@ class ImeState {
     });
   }
   get mode() {
-    return this.mode;
+    return this.#_mode;
   }
 }
 
