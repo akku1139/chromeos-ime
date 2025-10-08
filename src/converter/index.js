@@ -1,5 +1,7 @@
 import { dictTree } from '../dict';
 
+// FIXME: logic error
+
 /**
  *
  * @param { string } kana
