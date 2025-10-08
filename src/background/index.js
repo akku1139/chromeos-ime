@@ -164,8 +164,8 @@ const combKeys = {
   Shift: false,
   // Meta: false,
   Alt: false,
-}
-const combKeysList = Object.keys(combKeys)
+};
+const combKeysList = Object.keys(combKeys);
 
 
 const checkNotInputting = () => inputContext.converted === '' && inputContext.next === '';
@@ -275,7 +275,7 @@ chrome.input.ime.onKeyEvent.addListener(
           inputContext.converted = inputContext.converted.slice(0, -1);
           inputContext.raw.pop();
           setComposition();
-          return true
+          return true;
         }
       }
 
@@ -307,7 +307,7 @@ chrome.input.ime.onKeyEvent.addListener(
         if(conv === void 0) {
           if(getMatchingKeysCount() === 0) {
             if(inputContext.keep.kana !== '') {
-              addConverted(inputContext.keep.raw, inputContext.keep.kana)
+              addConverted(inputContext.keep.raw, inputContext.keep.kana);
               inputContext.keep = {
                 raw: '',
                 kana: '',
