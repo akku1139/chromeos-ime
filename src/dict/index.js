@@ -22,7 +22,7 @@ for(const key of dict.keys()) {
         end: false,
       }
     }
-    newData.end = i === a.length-1;
+    newData.end = newData.end || i === a.length-1;
     targetNode.set(e, newData);
     targetNode = newData.children;
   })
