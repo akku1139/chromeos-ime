@@ -61,6 +61,8 @@ class ImeState {
   }
 }
 
+const imeState = new ImeState;
+
 // onMenuItemActivated
 
 
@@ -159,17 +161,17 @@ chrome.input.ime.onKeyEvent.addListener(
       }
 
       else if(keyData.key === 'Convert') {
-        currentMode = MODE.PRE_CONVERSION;
+        imeState.mode = MODE.PRE_CONVERSION;
         // TODO: popup
         return true;
       }
 
       else if(keyData.key === 'NonConvert') {
-        currentMode  = MODE.DIRECT;
+        imeState.mode = MODE.DIRECT;
         return true;
       }
 
-      else if(currentMode === MODE.DIRECT) {
+      else if(imeState.mode === MODE.DIRECT) {
         return false;
       }
 
