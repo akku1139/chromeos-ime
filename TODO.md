@@ -13,3 +13,5 @@
 # support unicode input with U+xxxx
 
 # support SKK dict
+
+# add type check ci
