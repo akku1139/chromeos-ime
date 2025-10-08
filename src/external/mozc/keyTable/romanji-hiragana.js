@@ -1,6 +1,6 @@
 // based on https://github.com/google/mozc/blob/2efeece0ae519a17ffceaa766b5be1525f7cec7b/src/data/preedit/romanji-hiragana.tsv
 
-export const mozcRomanjiHiraganaTable = {
+export const mozcRomanjiHiraganaTable = /** @type {const} */ ({
   '-': ['ー'],
   '~': ['〜'],
   '.': ['。'],
@@ -146,7 +146,7 @@ export const mozcRomanjiHiraganaTable = {
   'pyo': ['ぴょ'],
   'fa': ['ふぁ'],
   'fi': ['ふぃ'],
-  'fu': ['ふ'],
+  // 'fu': ['ふ'],
   'fe': ['ふぇ'],
   'fo': ['ふぉ'],
   'fya': ['ふゃ'],
@@ -324,4 +324,4 @@ export const mozcRomanjiHiraganaTable = {
   'whu': ['う'],
   'whe': ['うぇ'],
   'who': ['うぉ'],
-};
+});

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-import { mozcRomanjiHiraganaTable } from './mozcTables/romanji-hiragana.js';
+import { mozcRomanjiHiraganaTable } from './external/mozc/keyTable/romanji-hiragana.js';
 
 /**
- * @type {Record<string, [string, string|undefined]>}
+ * @type {Record<string, readonly [string, string?]>}
  */
 export const defaultRomajiTable = {
   ...mozcRomanjiHiraganaTable,

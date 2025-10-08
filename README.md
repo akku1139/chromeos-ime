@@ -9,8 +9,8 @@ The full text of the AGPLv3 is available in `LICENSE` file located in the root d
 
 This software includes components that are distributed under other licenses.
 
-- `src/mozcTables/**/*`
+- `src/external/**/*`
 
-Please read `src/mozcTables/README.md`.
+Please read each `src/external/**/README.md`.
 
 All other files, unless explicitly stated otherwise, are provided under the AGPL-3.0-or-later license.
