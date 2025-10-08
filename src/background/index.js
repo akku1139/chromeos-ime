@@ -10,23 +10,9 @@ import { defaultRomajiTable, defaultRomajiTableKeys } from '../romajiTable.js';
  */
 const MODE = /** @type {const} */ ({
   DIRECT: 'Direct Input',
-  PRE_CONVERSION: 'Romaji input',
+  PRE_CONVERSION: 'Hiragana',
   // KANA: 'Kana input',
   // CONVERSION: 'kana-kanji conversion',
-});
-
-// TODO: merge init logic
-chrome.input.ime.setMenuItems({
-  engineID: 'test-ime-us',
-  items: [{
-    id: MODE.DIRECT,
-    label: 'Direct input',
-    checked: true,
-    enabled: true,
-  },{
-    id: MODE.PRE_CONVERSION,
-    label: 'Hiragana'
-  }],
 });
 
 /**
@@ -34,7 +20,7 @@ chrome.input.ime.setMenuItems({
  */
 class ImeState {
   /**
-   * @type { typeof MODE[keyof typeof MODE] }
+   * @type { ModeVal }
    */
   #_mode;
 
@@ -49,24 +35,39 @@ class ImeState {
     this.#_mode = v;
     chrome.input.ime.updateMenuItems({
       engineID: 'test-ime-us',
-      items: [{
-        id: v,
-        checked: true,
-        enabled: true,
-      }],
+      items: this.menuItems,
     });
   }
   get mode() {
     return this.#_mode;
   }
+
+  /**
+   * @returns { Array<chrome.input.ime.MenuItem> }
+   */
+  get menuItems() {
+    return Object.values(MODE).map(mode => ({
+      id: mode,
+      label: mode,
+      enabled: this.#_mode === mode,
+      checked: this.#_mode === mode,
+    }));
+  }
 }
 
 const imeState = new ImeState;
 
+chrome.input.ime.onActivate.addListener((_engineID, _screen) => {
+  chrome.input.ime.updateMenuItems({
+    engineID: 'test-ime-us',
+    items: imeState.menuItems,
+  });
+});
+
 // FIXME:
 chrome.input.ime.onMenuItemActivated.addListener((_engineID, name) => {
-  imeState.mode = name;
-})
+  imeState.mode = /** @type { ModeVal } */ (name);
+});
 
 
 /* Context */
