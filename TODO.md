@@ -14,8 +14,6 @@
 
 # support SKK dict
 
-# add type check ci
-
 # raw input mode
 
 # support multiple context?
