@@ -22,7 +22,8 @@ declare global {
   }>;
 
   type InputMode = {
-    keydown: (c: ContextManager) => boolean,
+    keydown?: (key: chrome.input.ime.KeyboardEvent, ctx: ContextManager) => boolean,
+    keyup?: (key: chrome.input.ime.KeyboardEvent, ctx: ContextManager) => boolean,
   };
 }
 

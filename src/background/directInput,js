@@ -1,6 +1,0 @@
-/**
- * @type { InputMode }
- */
-export const DirectInput = {
-
-};

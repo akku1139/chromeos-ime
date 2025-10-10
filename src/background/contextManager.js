@@ -1,3 +1,50 @@
+import { conversion } from './input/conversion.js';
+import { directInput } from './input/direct.js';
+import { preConversion } from './input/preConversion.js';
+
+class ContextManager {
+  /**
+   * @readonly
+   * @type { chrome.input.ime.InputContext }
+   */
+  systemContext;
+
+  /**
+   * @type { {
+   *    converted: string,
+   *    raw: Array<string>,
+   *    work: {
+   *      keep: {
+   *        raw: string,
+   *        kana: string,
+   *      },
+   *      next: string,
+   *    }
+   * } }
+   */
+  kana;
+
+  /**
+   * @param { chrome.input.ime.InputContext } systemContext
+   */
+  constructor(systemContext) {
+    this.systemContext = systemContext;
+
+    // this.clear();
+    this.kana = { converted: '', raw: [], work: { keep: { raw: '', kana: '' }, next: '' } };
+  }
+
+  clear() {
+    this.kana = { converted: '', raw: [], work: { keep: { raw: '', kana: '' }, next: '' } };
+  }
+}
+
+export const INPUT_MODE = /** @type {const} */ ({
+  DIRECT: directInput,
+  PRE_CONVERSION: preConversion, // TODO: add non-Hiragana modes
+  CONVERSION: conversion,
+});
+
 class IME {
   /**
    * @readonly
@@ -12,9 +59,20 @@ class IME {
   screen;
 
   /**
-  * @type { Map<number, ContextManager> }
-  */
+   * @readonly
+   * @type { Map<number, ContextManager> }
+   */
   contexts;
+
+  /**
+   * @type { ContextManager }
+   */
+  activeContext;
+
+  /**
+   * @type { InputMode }
+   */
+  activeInputMode;
 
   /**
    * @param { string } engineID
@@ -25,6 +83,19 @@ class IME {
     this.screen = screen;
 
     this.contexts = new Map();
+
+    // FIXME: dummy context
+    this.activeContext = new ContextManager({
+      contextID: -1,
+      type: 'text',
+      autoCorrect: false,
+      autoComplete: false,
+      autoCapitalize: 'characters',
+      spellCheck: false,
+      shouldDoLearning: false,
+    });
+
+    this.activeInputMode = INPUT_MODE.DIRECT;
   }
 
   /**
@@ -35,35 +106,23 @@ class IME {
   }
 }
 
-class ContextManager {
-  /**
-   * @readonly
-   * @type { chrome.input.ime.InputContext }
-   */
-  systemContext;
-
-  /**
-   * @param { chrome.input.ime.InputContext } systemContext
-   */
-  constructor(systemContext) {
-    this.systemContext = systemContext;
-  }
-}
-
 /**
  * It must be assigned whenever it is used.
  * @type { IME }
  */
-let ime;
+export let ime;
 
 /**
  * @type { Parameters<typeof chrome.input.ime.onFocus.addListener>[0] }
  */
 export const onFocusListener = (context) => {
-  if(ime.contexts.has(context.contextID)) {
-    throw new Error(`Creating duplicate contexts: ${context.contextID}`);
+  let activeContext = ime.contexts.get(context.contextID);
+  if(!activeContext) {
+    const c = new ContextManager(context);
+    ime.contexts.set(context.contextID, c);
+    activeContext = c;
   }
-  ime.contexts.set(context.contextID, new ContextManager(context));
+  ime.activeContext = activeContext;
 };
 
 /**
@@ -89,4 +148,6 @@ export const onActivateListener = (engineID, screen) => {
  */
 export const onResetListener = (engineID) => {
   // ime = void 0;
+  // FIXME: reset job
+  ime = new IME('', 'normal');
 };
