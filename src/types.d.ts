@@ -1,3 +1,5 @@
+import { ContextManager } from './background/contextManager.js';
+
 declare global {
   // interface ReadonlyArray<T> {
   interface Array<T> {
@@ -18,6 +20,10 @@ declare global {
     children: DictTreeNode,
     end: boolean,
   }>;
+
+  type InputMode = {
+    keydown: (c: ContextManager) => boolean,
+  };
 }
 
 export {};
