@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 import { dictTree } from '../dict/index.js';
 
 // FIXME: logic error
