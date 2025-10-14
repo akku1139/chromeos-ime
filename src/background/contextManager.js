@@ -145,6 +145,8 @@ export const onFocusListener = (context) => {
  * @type { Parameters<typeof chrome.input.ime.onBlur.addListener>[0] }
  */
 export const onBlurListener = (contextID) => {
+  // FIXME:
+  ime.activeInputMode = INPUT_MODE.PRE_CONVERSION;
   // TODO: commitContext
   const ret = ime.contexts.delete(contextID);
   if(!ret) {

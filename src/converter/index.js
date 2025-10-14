@@ -8,14 +8,14 @@ import { dictTree } from '../dict/index.js';
  *
  * @param { string } kana
  * @param { Array<string> } raw
- * @returns { Array<string> }
+ * @returns { Array<[string, string]> }
  */
 export const findAllMatchedToken = (kana, raw) => {
   let i = 0;
   let target = '';
 
   /**
-   * @type { Array<string> }
+   * @type { Array<[string, string]> }
    */
   const res = [];
 
@@ -32,12 +32,12 @@ export const findAllMatchedToken = (kana, raw) => {
     }
 
     if(data.end) {
-      res.push(target);
+      res.push([target, '']);
     }
 
     if(raw[i+1] !== undefined) {
       const rs = Array.from(raw[i+1]);
-      let rawTarget = target;
+      let rawTarget = '';
       let rawNode = data;
 
       for(const r of rs) {
@@ -50,7 +50,7 @@ export const findAllMatchedToken = (kana, raw) => {
         rawTarget += r;
 
         if(rawData.end) {
-          res.push(rawTarget);
+          res.push([target, rawTarget]);
         }
 
         rawNode = rawData;
