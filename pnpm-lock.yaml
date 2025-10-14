@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@wllama/wllama':
+        specifier: ^2.3.6
+        version: 2.3.6
     devDependencies:
       chrome-types:
         specifier: ^0.1.380
@@ -17,6 +21,9 @@ importers:
 
 packages:
 
+  '@wllama/wllama@2.3.6':
+    resolution: {integrity: sha512-ntnoq7tM8ej2zjXmAs5mAgwRoWEvvTqiiRhk2AaL3MpazvNEYXBXy2i6V5e5Hpd9nZjlKQRxFChxRVdJM4K0pw==}
+
   chrome-types@0.1.380:
     resolution: {integrity: sha512-mktKVbwUJoddf1n29XFXJpe6b5tni5Ar1CyQt5XLKaVWRN06vv6p328+wHOHjXmP3Jw5ykWfEoqiuptvMMDeew==}
 
@@ -26,6 +33,8 @@ packages:
     hasBin: true
 
 snapshots:
+
+  '@wllama/wllama@2.3.6': {}
 
   chrome-types@0.1.380: {}
 
