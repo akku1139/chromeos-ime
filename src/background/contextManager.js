@@ -110,7 +110,8 @@ class IME {
       shouldDoLearning: false,
     });
 
-    this.#_activeInputMode = INPUT_MODE.DIRECT;
+    // this.#_activeInputMode = INPUT_MODE.DIRECT;
+    this.#_activeInputMode = INPUT_MODE.PRE_CONVERSION;
   }
 
   /**

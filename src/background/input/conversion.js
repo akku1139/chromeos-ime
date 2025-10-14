@@ -32,4 +32,16 @@ export const conversion = {
       }
     });
   },
+
+  keydown(key) {
+    if(key.ctrlKey) {
+      return false;
+    }
+
+    else if(key.key === ' ') {
+      return true;
+    }
+
+    return false;
+  }
 };
