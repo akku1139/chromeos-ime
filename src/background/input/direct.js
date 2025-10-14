@@ -5,6 +5,8 @@
  */
 export const directInput = {
   keydown() {
+    // TODO: change input mode
+
     return false;
   }
 };

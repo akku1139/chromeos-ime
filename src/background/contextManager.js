@@ -74,7 +74,20 @@ class IME {
   /**
    * @type { InputMode }
    */
-  activeInputMode;
+  #_activeInputMode;
+
+  /**
+   * @param { InputMode } mode
+   */
+  set activeInputMode(mode) {
+    this.#_activeInputMode.cleanup?.();
+    this.#_activeInputMode = mode;
+    this.#_activeInputMode.init?.();
+  }
+
+  get activeInputMode() {
+    return this.#_activeInputMode;
+  }
 
   /**
    * @param { string } engineID
@@ -97,7 +110,7 @@ class IME {
       shouldDoLearning: false,
     });
 
-    this.activeInputMode = INPUT_MODE.DIRECT;
+    this.#_activeInputMode = INPUT_MODE.DIRECT;
   }
 
   /**
