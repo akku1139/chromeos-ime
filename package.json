@@ -7,8 +7,5 @@
     "chrome-types": "^0.1.380",
     "typescript": "^5.9.3"
   },
-  "license": "AGPL-3.0-or-later",
-  "dependencies": {
-    "@wllama/wllama": "^2.3.6"
-  }
+  "license": "AGPL-3.0-or-later"
 }
