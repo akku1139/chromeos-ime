@@ -2,15 +2,20 @@
 
 import { findAllMatchedToken } from '../../converter/index.js';
 import { ime, INPUT_MODE } from '../contextManager.js';
+import { dict } from '../../dict/index.js';
 
 /**
- * @typedef { Map<[string, string], {
+ * @typedef { Map<string, {
  *    children: () => ConvTreeNode,
  *    end: boolean,
  *  }> } ConvTreeNode
  * @type { ConvTreeNode }
  */
 const convTree = new Map();
+/**
+ * @type { Map<string, ConvTreeNode> }
+ */
+const convTreeCache = new Map();
 
 /**
  * @type { Array<[string, string]> }
@@ -27,6 +32,32 @@ const removePrefix = (fullString, prefixToRemove) => {
 }
 
 /**
+ * @param { string } target
+ * @param { Array<string> } targetRaw
+ * @returns { ConvTreeNode }
+ */
+const buildConvTreeNode = (target, targetRaw) => {
+  /**
+   * @type { ConvTreeNode }
+   */
+  const node = new Map();
+
+  // マッチするトークンを取得
+  const res = findAllMatchedToken(target, targetRaw).toReversed();
+
+  for(const r of res) {
+    // 残りの未変換文字列を取得
+    const rest = removePrefix(r[0], target);
+    // 現在のトークンをdictから取得
+    const distMatched = [...dict.get(r[0])?.target ?? [], ...dict.get(r[0]+r[1])?.target ?? []];
+    node.set(, )
+    // 残りが0だったらendフラグ
+  }
+
+  return node;
+}
+
+/**
  * @type { InputMode }
  */
 export const conversion = {
@@ -35,21 +66,7 @@ export const conversion = {
 
     const res = findAllMatchedToken(ime.activeContext.kana.converted, ime.activeContext.kana.raw).toReversed();
 
-    for(const r of res) {
-      let data = convTree.get(r);
-      if(!data) {
-        const prefixRemoved = removePrefix(ime.activeContext.kana.converted, r[0]);
-        data = {
-          children: (() => {
-            return () => {
-              // return new Map()
-            }
-          })(),
-          end: prefixRemoved === '',
-        };
-        convTree.set(r, data);
-      }
-    }
+    const data = buildConvTreeNode(ime.activeContext.kana.converted, ime.activeContext.kana.raw);
 
     // FIXME: everything
     chrome.input.ime.setCandidates({
