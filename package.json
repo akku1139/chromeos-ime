@@ -4,7 +4,7 @@
     "check": "tsc -p jsconfig.json"
   },
   "devDependencies": {
-    "chrome-types": "^0.1.380",
+    "chrome-types": "^0.1.385",
     "typescript": "^5.9.3"
   },
   "license": "AGPL-3.0-or-later"
