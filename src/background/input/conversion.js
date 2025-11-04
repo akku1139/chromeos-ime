@@ -34,27 +34,33 @@ const removePrefix = (fullString, prefixToRemove) => {
 /**
  * @param { string } target
  * @param { Array<string> } targetRaw
- * @returns { ConvTreeNode }
  */
 const buildConvTreeNode = (target, targetRaw) => {
-  /**
-   * @type { ConvTreeNode }
-   */
-  const node = new Map();
+  return () => {
+    /**
+     * @type { ConvTreeNode }
+     */
+    const node = new Map();
 
-  // マッチするトークンを取得
-  const res = findAllMatchedToken(target, targetRaw).toReversed();
+    // マッチするトークンを取得
+    const res = findAllMatchedToken(target, targetRaw).toReversed();
 
-  for(const r of res) {
-    // 残りの未変換文字列を取得
-    const rest = removePrefix(r[0], target);
-    // 現在のトークンをdictから取得
-    const distMatched = [...dict.get(r[0])?.target ?? [], ...dict.get(r[0]+r[1])?.target ?? []];
-    node.set(, )
-    // 残りが0だったらendフラグ
-  }
+    for(const r of res) {
+      // 残りの未変換文字列を取得
+      const rest = removePrefix(r[0], target);
+      // 現在のトークンをdictから取得
+      const dictMatched = [...dict.get(r[0])?.target ?? [], ...dict.get(r[0]+r[1])?.target ?? []];
+      // 残りが0だったらendフラグ
+      for(const m of dictMatched) {
+        node.set(m, {
+          children: buildConvTreeNode(rest, targetRaw.slice(target.length-rest.length)),
+          end: rest.length === 0,
+        });
+      }
+    }
 
-  return node;
+    return node;
+  };
 }
 
 /**
