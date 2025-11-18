@@ -70,14 +70,15 @@ export const conversion = {
   init() {
     convTree.clear();
 
-    const res = findAllMatchedToken(ime.activeContext.kana.converted, ime.activeContext.kana.raw).toReversed();
+    // const res = findAllMatchedToken(ime.activeContext.kana.converted, ime.activeContext.kana.raw).toReversed();
 
     const data = buildConvTreeNode(ime.activeContext.kana.converted, ime.activeContext.kana.raw);
 
     // FIXME: everything
     chrome.input.ime.setCandidates({
       contextID: ime.activeContext.systemContext.contextID,
-      candidates: [...res.map((r, i) => ({ candidate: r[0], id: i }))],
+      // candidates: [...res.map((r, i) => ({ candidate: r[0], id: i }))],
+      candidates: [...Array.from(data().keys()).map((r, i) => ({ candidate: r[0], id: i }))],
     });
     chrome.input.ime.setCandidateWindowProperties({
       engineID: ime.engineID,
