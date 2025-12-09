@@ -23,7 +23,7 @@ const checkNotInputting = () => ime.activeContext.kana.converted === '' && ime.a
 const setComposition = () => chrome.input.ime.setComposition({
   contextID: ime.activeContext.systemContext.contextID,
   text: ime.activeContext.kana.converted + ime.activeContext.kana.work.next,
-  cursor: ime.activeContext.kana.converted.length + ime.activeContext.kana.work.next.length
+  cursor: ime.activeContext.kana.converted.length + ime.activeContext.kana.work.next.length,
 });
 
 // TODO: share it

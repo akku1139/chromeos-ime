@@ -11,7 +11,7 @@ import { dict } from '../../dict/index.js';
  *  }> } ConvTreeNode
  * @type { ConvTreeNode }
  */
-const convTree = new Map();
+let convTree = new Map();
 /**
  * @type { Map<string, ConvTreeNode> }
  */
@@ -63,6 +63,43 @@ const buildConvTreeNode = (target, targetRaw) => {
   };
 }
 
+const currentCandidates = new (class {
+  constructor() {
+    this.candidates = getCandidates();
+  }
+
+  currentIndex = 0;
+  /**
+   * @type { ReturnType<typeof getCandidates> }
+   */
+  candidates;
+
+  inc() {
+    if(this.currentIndex+1 < this.candidates.length) this.currentIndex++;
+    else this.currentIndex = 0;
+  }
+
+  get selected() {
+    return this.candidates[this.currentIndex];
+  }
+});
+
+const getCandidates = () => {
+  const res = [...Array.from(convTree.entries()).map((r, i) => ({ candidate: r[0][0], id: i, children: r[1].children, end: r[1].end }))];
+  currentCandidates.candidates = res;
+  currentCandidates.currentIndex = 0;
+  return res;
+};
+
+const setComposition = () => {
+  const current = currentCandidates.selected.candidate;
+  chrome.input.ime.setComposition({
+    contextID: ime.activeContext.systemContext.contextID,
+    text: current,
+    cursor: current.length,
+  });
+};
+
 /**
  * @type { InputMode }
  */
@@ -72,32 +109,32 @@ export const conversion = {
 
     // const res = findAllMatchedToken(ime.activeContext.kana.converted, ime.activeContext.kana.raw).toReversed();
 
-    const data = buildConvTreeNode(ime.activeContext.kana.converted, ime.activeContext.kana.raw);
+    convTree = buildConvTreeNode(ime.activeContext.kana.converted, ime.activeContext.kana.raw)();
 
     // FIXME: everything
     chrome.input.ime.setCandidates({
       contextID: ime.activeContext.systemContext.contextID,
       // candidates: [...res.map((r, i) => ({ candidate: r[0], id: i }))],
-      candidates: [...Array.from(data().keys()).map((r, i) => ({ candidate: r[0], id: i }))],
+      candidates: getCandidates(),
     });
     chrome.input.ime.setCandidateWindowProperties({
       engineID: ime.engineID,
       properties: {
         visible: true,
         vertical: true,
-      }
+      },
     });
   },
 
   cleanup() {
-    convTree.clear();
-
     chrome.input.ime.setCandidateWindowProperties({
       engineID: ime.engineID,
       properties: {
         visible: false,
-      }
+      },
     });
+
+    convTree.clear();
   },
 
   keydown(key) {
@@ -106,21 +143,23 @@ export const conversion = {
     }
 
     else if(key.key === ' ') {
-
-      return true;
+      currentCandidates.inc();
     }
 
     else if(key.key === 'Enter') {
-      ime.activeInputMode = INPUT_MODE.PRE_CONVERSION;
-      return true;
+      if(currentCandidates.selected.end)
+        ime.activeInputMode = INPUT_MODE.PRE_CONVERSION;
+      else
+        convTree = currentCandidates.selected.children();
     }
 
     else if(key.key === 'Backspace') {
       ime.activeInputMode = INPUT_MODE.PRE_CONVERSION;
-      return true;
     }
 
-    return false;
+    setComposition();
+
+    return true;
   }
 };
 
