@@ -5,10 +5,13 @@ import { ime, INPUT_MODE } from '../contextManager.js';
 import { dict } from '../../dict/index.js';
 
 /**
- * @typedef { Map<string, {
+ * @typedef { {
  *    children: () => ConvTreeNode,
  *    end: boolean,
- *  }> } ConvTreeNode
+ *    matched: Array<string>,
+ *    rest: string,
+ * } } ConvTreeLeaf
+ * @typedef { Map<string, ConvTreeLeaf> } ConvTreeNode
  * @type { ConvTreeNode }
  */
 let convTree = new Map();
@@ -51,12 +54,12 @@ const buildConvTreeNode = (target, targetRaw) => {
       // 現在のトークンをdictから取得
       const dictMatched = [...dict.get(r[0])?.target ?? [], ...dict.get(r[0]+r[1])?.target ?? []];
       // 残りが0だったらendフラグ
-      for(const m of dictMatched) {
-        node.set(m, {
-          children: buildConvTreeNode(rest, targetRaw.slice(target.length-rest.length)),
-          end: rest.length === 0,
-        });
-      }
+      node.set(r[0], {
+        children: buildConvTreeNode(rest, targetRaw.slice(target.length-rest.length)),
+        end: rest.length === 0,
+        matched: dictMatched,
+        rest,
+      });
     }
 
     return node;
@@ -85,18 +88,37 @@ const currentCandidates = new (class {
 });
 
 const getCandidates = () => {
-  const res = [...Array.from(convTree.entries()).map((r, i) => ({ candidate: r[0][0], id: i, children: r[1].children, end: r[1].end }))];
+  /**
+   * @type { Array<{
+   *    id: number,
+   *    candidate: string,
+   *    node: ConvTreeLeaf,
+   * }> }
+   */
+  let res = [];
+  let id = 0;
+  convTree.entries().forEach(n => {
+    for(const m of n[1].matched) {
+      res.push({
+        id,
+        candidate: m,
+        node: n[1],
+      });
+      ++id;
+    }
+  });
   currentCandidates.candidates = res;
   currentCandidates.currentIndex = 0;
   return res;
 };
 
 const setComposition = () => {
-  const current = currentCandidates.selected.candidate;
+  const current = currentCandidates.selected;
+  // FIXME: 未変換分も入れる
   chrome.input.ime.setComposition({
     contextID: ime.activeContext.systemContext.contextID,
-    text: current,
-    cursor: current.length,
+    text: current.candidate + current.node.rest,
+    cursor: current.candidate.length,
   });
 };
 
@@ -147,10 +169,10 @@ export const conversion = {
     }
 
     else if(key.key === 'Enter') {
-      if(currentCandidates.selected.end)
+      if(currentCandidates.selected.node.end)
         ime.activeInputMode = INPUT_MODE.PRE_CONVERSION;
       else
-        convTree = currentCandidates.selected.children();
+        convTree = currentCandidates.selected.node.children();
     }
 
     else if(key.key === 'Backspace') {
