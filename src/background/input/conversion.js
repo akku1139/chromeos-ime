@@ -65,7 +65,7 @@ const buildConvTreeNode = (target, targetRaw) => {
 
 const currentCandidates = new (class {
   constructor() {
-    this.candidates = getCandidates();
+    this.candidates = []; // とりあえず
   }
 
   currentIndex = 0;
