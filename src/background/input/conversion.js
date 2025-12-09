@@ -18,12 +18,7 @@ let convTree = new Map();
 /**
  * @type { Map<string, ConvTreeNode> }
  */
-const convTreeCache = new Map();
-
-/**
- * @type { Array<[string, string]> }
- */
-let convSelected = [];
+const convTreeCache = new Map(); // 同じchildrenが生成されるときにキャッシュしておくと良い気がした
 
 /**
  * @param { string } fullString
@@ -32,7 +27,7 @@ let convSelected = [];
 const removePrefix = (fullString, prefixToRemove) => {
   const lengthToRemove = prefixToRemove.length;
   return fullString.slice(lengthToRemove);
-}
+};
 
 /**
  * @param { string } target
@@ -50,7 +45,7 @@ const buildConvTreeNode = (target, targetRaw) => {
 
     for(const r of res) {
       // 残りの未変換文字列を取得
-      const rest = removePrefix(r[0], target);
+      const rest = removePrefix(target, r[0]);
       // 現在のトークンをdictから取得
       const dictMatched = [...dict.get(r[0])?.target ?? [], ...dict.get(r[0]+r[1])?.target ?? []];
       // 残りが0だったらendフラグ

@@ -69,9 +69,9 @@ export const preConversion = {
       }
 
       if(ime.activeContext.kana.work.next !== '') {
-        ime.activeContext.kana.work.next = ime.activeContext.kana.work.next.slice(0, -1);
+        ime.activeContext.kana.work.next = ime.activeContext.kana.work.next.slice(0, -1); // FIXME: keep?
         setComposition();
-        return true; // FIXME: bug?
+        return true;
       }
 
       if(ime.activeContext.kana.converted !== '') {
