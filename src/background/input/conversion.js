@@ -77,7 +77,7 @@ const currentCandidates = new (class {
     else this.currentIndex = 0;
   }
 
-  get selected() {
+  selected() {
     return this.candidates[this.currentIndex];
   }
 });
@@ -108,7 +108,8 @@ const getCandidates = () => {
 };
 
 const setComposition = () => {
-  const current = currentCandidates.selected;
+  const current = currentCandidates.selected();
+  if(current===void 0) return
   // FIXME: 未変換分も入れる
   chrome.input.ime.setComposition({
     contextID: ime.activeContext.systemContext.contextID,
@@ -164,10 +165,16 @@ export const conversion = {
     }
 
     else if(key.key === 'Enter') {
-      if(currentCandidates.selected.node.end)
+      const cur = currentCandidates.selected();
+      chrome.input.ime.commitText({
+        contextID: ime.activeContext.systemContext.contextID,
+        text: cur.candidate,
+      });
+
+      if(cur.node.end)
         ime.activeInputMode = INPUT_MODE.PRE_CONVERSION;
       else
-        convTree = currentCandidates.selected.node.children();
+        convTree = cur.node.children();
     }
 
     else if(key.key === 'Backspace') {
