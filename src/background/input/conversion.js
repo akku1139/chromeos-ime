@@ -82,6 +82,9 @@ const currentCandidates = new (class {
   }
 });
 
+/**
+ * 副作用あり、currentCandidatesをリセットする
+ */
 const getCandidates = () => {
   /**
    * @type { Array<{
@@ -173,8 +176,13 @@ export const conversion = {
 
       if(cur.node.end)
         ime.activeInputMode = INPUT_MODE.PRE_CONVERSION;
-      else
+      else {
         convTree = cur.node.children();
+        chrome.input.ime.setCandidates({ // FIXME: 重複
+          contextID: ime.activeContext.systemContext.contextID,
+          candidates: getCandidates(),
+        });
+      }
     }
 
     else if(key.key === 'Backspace') {
