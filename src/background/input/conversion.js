@@ -88,6 +88,7 @@ const currentCandidates = new (class {
 
 /**
  * 副作用あり、currentCandidatesをリセットする
+ * @returns { Parameters<typeof chrome.input.ime.setCandidates>[0]['candidates'] }
  */
 const getCandidates = () => {
   /**
@@ -111,7 +112,9 @@ const getCandidates = () => {
   });
   currentCandidates.candidates = res;
   currentCandidates.currentIndex = 0;
-  return res.map(c => ({...c, node: void 0}));
+  return res.map(c => ({
+    id: c.id, candidate: c.candidate // FIXME: 圧倒的非効率
+  }));
 };
 
 const setComposition = () => {
