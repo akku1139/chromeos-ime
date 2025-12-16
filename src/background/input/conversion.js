@@ -76,9 +76,21 @@ const currentCandidates = new (class {
    */
   candidates;
 
+  updateWindow() {
+    chrome.input.ime.setCandidateWindowProperties({
+      engineID: ime.engineID,
+      properties: {
+        visible: true,
+        vertical: true,
+        currentCandidateIndex: this.currentIndex,
+      },
+    });
+  }
+
   inc() {
     if(this.currentIndex+1 < this.candidates.length) this.currentIndex++;
     else this.currentIndex = 0;
+    this.updateWindow();
   }
 
   selected() {
@@ -161,6 +173,7 @@ export const conversion = {
         visible: false,
       },
     });
+    chrome.input.ime.clearComposition({ contextID: ime.activeContext.systemContext.contextID });
 
     convTree.clear();
   },
