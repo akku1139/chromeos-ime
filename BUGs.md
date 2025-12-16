@@ -19,4 +19,7 @@ importやめる?
 js+export defaultにした
 辞書更新のたびに書き換え必要
 
+多分fetchしたほうがいい
+Language Serverへの負荷が高い
+
 ## 確定した分がinputContextから消えない
