@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-import src_jisho_s from './json/SKK-JISYO.S.json' with { type: 'json' };
+import src_jisho_s from './json/SKK-JISYO.S.js';
 
 /**
  * @type { Dict }

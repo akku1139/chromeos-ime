@@ -1,4 +1,4 @@
-{
+export default {
   "version": "0.0.0",
   "description": "Small size dictionary for SKK system",
   "copyright": "Copyright (C) 1988-1995, 1997, 1999-2003\n\nMasahiko Sato <masahiko@kuis.kyoto-u.ac.jp>\nHironobu Takahashi <takahasi@tiny.or.jp>,\nMasahiro Doteguchi, Miki Inooka,\nYukiyoshi Kameyama <kameyama@kuis.kyoto-u.ac.jp>,\nAkihiko Sasaki, Dai Ando, Junichi Okukawa,\nKatsushi Sato and Nobuhiro Yamagishi",
