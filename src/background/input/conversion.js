@@ -68,7 +68,11 @@ const currentCandidates = new (class {
 
   currentIndex = 0;
   /**
-   * @type { ReturnType<typeof getCandidates> }
+   * @type { Array<{
+   *  node: ConvTreeLeaf;
+   *  id: number;
+   *  candidate: string;
+   * }> }
    */
   candidates;
 
@@ -107,7 +111,7 @@ const getCandidates = () => {
   });
   currentCandidates.candidates = res;
   currentCandidates.currentIndex = 0;
-  return res;
+  return res.map(c => ({...c, node: void 0}));
 };
 
 const setComposition = () => {
@@ -182,6 +186,7 @@ export const conversion = {
           contextID: ime.activeContext.systemContext.contextID,
           candidates: getCandidates(),
         });
+        ime.activeContext.clear();
       }
     }
 
