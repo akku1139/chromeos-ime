@@ -9,16 +9,16 @@ importers:
   .:
     devDependencies:
       chrome-types:
-        specifier: ^0.1.380
-        version: 0.1.380
+        specifier: ^0.1.403
+        version: 0.1.403
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
 
 packages:
 
-  chrome-types@0.1.380:
-    resolution: {integrity: sha512-mktKVbwUJoddf1n29XFXJpe6b5tni5Ar1CyQt5XLKaVWRN06vv6p328+wHOHjXmP3Jw5ykWfEoqiuptvMMDeew==}
+  chrome-types@0.1.403:
+    resolution: {integrity: sha512-PXa6GXrdHe2BCiC8mkp79T+CtwJztvWhMKpn5kHZ7nXujE9w+qOcZP5/EnuQaLsOXkuQCWHZdEQZCRg2NSA96A==}
 
   typescript@5.9.3:
     resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
@@ -27,6 +27,6 @@ packages:
 
 snapshots:
 
-  chrome-types@0.1.380: {}
+  chrome-types@0.1.403: {}
 
   typescript@5.9.3: {}
